@@ -3,8 +3,9 @@
 # Script to make conversion to bids
 # Chris Cheng 2018
 
-import pydicom
+import dicom as pydicom
 import re
+import tarfile
 from optparse import OptionParser, Option
 
 
@@ -28,30 +29,45 @@ def run_command(cmd):
 
 
 def get_date_from_dicom_tarball(filename):
-    dataset = pydicom.dcmread(filename)
-    date = dataset.StudyDate
+    try:
+        dataset = pydicom.read_file(filename)
+        date = dataset.StudyDate
+        
+        return date
+    except pydicom.errors.InvalidDicomError:
+        return "no extraction"
 
-    return date
 
-
-def get_sid_form_filename(filename):
+def get_sid_from_filename(filename):
     # e.g. for Haxby/Sam/1021_actions/sourcedata/sub-sid000416/ses-raiders/anat/sub-sid000416_ses-raiders_T2w.dicom.tgz
     # it would be  sid000416
-    sid = re.search('.*/sub-(?P<sid>sid\d+)/.*', filename)
+    if re.search('.*/sub-(?P<sid>sid\d+)/.*', filename):
+        sid = re.search('.*/sub-(?P<sid>sid\d+)/.*', filename)
+    else:
+        sid = re.search('.*/sub-(?P<sid>\w+)/.*', filename)
 
     return sid.group('sid')
 
 
 def convert_tarball(filename):
-    date = get_date_from_dicom_tarball(filename)
-    subjid = get_sid_from_filename(filename)
-    # run the command which does conversion
-    run_command('heudiconv --bids -f reproin -s {} -ss {} --files {}'.format(subjid, date, filename))
+    dicoms = tarfile.open(filename, 'r')
+
+    for dcm in dicoms.getmembers():
+        file = dicoms.extractfile(dcm)
+        date = get_date_from_dicom_tarball(file)
+        subjid = get_sid_from_filename(filename)
+
+        # run the command which does conversion
+        run_command('heudiconv --bids -f reproin -s {} -ss {} --files {}'.format(subjid, date, filename))
+
+        break
+
+    dicoms.close()
 
 if __name__ == '__main__':
     parser = get_opt_parser()
 
-    (options, files) = parser.parse_args(args)
+    (options, files) = parser.parse_args()
 
     for filename in files:
         convert_tarball(filename)
