@@ -14,9 +14,9 @@ def get_opt_parser():
     p = OptionParser()
 
     p.add_options([
-        Option("-p", "--placeholder",
-               dest="hopa", default="leaving room for future options to be added",
-               help="out of order"),
+        Option("-f", "--files",
+               dest="files", default="takes tarball file with .tgz extension",
+               help="this option is compatible with string expansion and takes a tarball file with .tgz extension"),
 
     ])
 
