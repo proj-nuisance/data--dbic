@@ -1,3 +1,6 @@
 [submodule "sourcedata/dbic-BIDS"]
 	path = sourcedata/dbic-BIDS
 	url = bids@rolando.cns:/inbox/BIDS
+[submodule "bids"]
+	path = bids
+	url = ./bids
