@@ -15,9 +15,6 @@ def get_opt_parser():
     p = OptionParser()
 
     p.add_options([
-        Option("-f", "--files",
-               dest="files", default="takes tarball file with .tgz extension",
-               help="this option is compatible with string expansion and takes a tarball file with .tgz extension"),
     ])
 
     return p
@@ -69,6 +66,9 @@ if __name__ == '__main__':
     parser = get_opt_parser()
 
     (options, files) = parser.parse_args()
+    
+    if not files:
+        print("No files entered!")
 
     for filename in files:
         convert_tarball(filename)
