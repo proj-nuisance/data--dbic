@@ -3,9 +3,10 @@
 # Script to make conversion to bids
 # Chris Cheng 2018
 
-import dicom as pydicom
+import pydicom
 import re
 import tarfile
+import json
 from optparse import OptionParser, Option
 
 
@@ -17,7 +18,6 @@ def get_opt_parser():
         Option("-f", "--files",
                dest="files", default="takes tarball file with .tgz extension",
                help="this option is compatible with string expansion and takes a tarball file with .tgz extension"),
-
     ])
 
     return p
@@ -30,10 +30,11 @@ def run_command(cmd):
 
 def get_date_from_dicom_tarball(filename):
     try:
-        dataset = pydicom.read_file(filename)
+        dataset = pydicom.dcmread(filename)
         date = dataset.StudyDate
+        time = dataset.StudyTime
         
-        return date
+        return (date, time)
     except pydicom.errors.InvalidDicomError:
         return "no extraction"
 
@@ -58,7 +59,7 @@ def convert_tarball(filename):
         subjid = get_sid_from_filename(filename)
 
         # run the command which does conversion
-        run_command('heudiconv --bids -f reproin -s {} -ss {} --files {}'.format(subjid, date, filename))
+        run_command('heudiconv --bids -f reproin -s {} -ss {}-{} --files {}'.format(subjid, date[0], date[1].replace(":", "")[:6], filename))
 
         break
 
