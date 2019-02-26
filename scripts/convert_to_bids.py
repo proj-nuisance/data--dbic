@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 # Script to make conversion to bids
 # Chris Cheng 2018
@@ -7,6 +7,7 @@ import pydicom
 import re
 import tarfile
 import json
+import os
 from optparse import OptionParser, Option
 
 
@@ -15,14 +16,21 @@ def get_opt_parser():
     p = OptionParser()
 
     p.add_options([
+        Option("-o", "--output",
+            dest="dir", default=None,
+            help="takes an output directory for heudiconv to spit its results to"),
+
     ])
 
     return p
 
 
 def run_command(cmd):
+    
     print(cmd)
-    # later -- actually run it
+
+    if os.system(cmd) != 0:
+        raise RuntimeError('heudiconv did not successfully execute. check yourself')
 
 
 def get_date_from_dicom_tarball(filename):
@@ -47,7 +55,7 @@ def get_sid_from_filename(filename):
     return sid.group('sid')
 
 
-def convert_tarball(filename):
+def convert_tarball(filename, options):
     dicoms = tarfile.open(filename, 'r')
 
     for dcm in dicoms.getmembers():
@@ -56,7 +64,10 @@ def convert_tarball(filename):
         subjid = get_sid_from_filename(filename)
 
         # run the command which does conversion
-        run_command('heudiconv --bids -f reproin -s {} -ss {}-{} --files {}'.format(subjid, date[0], date[1].replace(":", "")[:6], filename))
+        if options.dir == None:
+            run_command('heudiconv --bids -f reproin -l "" -s {} -ss {}-{} --files {}'.format(subjid, date[0], date[1].replace(":", "")[:6], filename))
+        else:
+            run_command('heudiconv --bids -f reproin -l "" -s {} -ss {}-{} --files {} -o {}'.format(subjid, date[0], date[1].replace(":", "")[:6], filename, options.dir))
 
         break
 
@@ -71,4 +82,4 @@ if __name__ == '__main__':
         print("No files entered!")
 
     for filename in files:
-        convert_tarball(filename)
+        convert_tarball(filename, options)
