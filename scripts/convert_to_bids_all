@@ -2,4 +2,5 @@
 
 topdir=$(readlink -f $0 | xargs dirname | xargs dirname)
 
-/bin/ls  $topdir/sourcedata/dbic-BIDS/Haxby/Sam/*/sourcedata/sub-*/{,ses-*/}/anat/*T1w.dicom.tgz | grep -v scout | xargs python $topdir/scripts/convert_to_bids.py
+/bin/ls  ../sourcedata/dbic-BIDS/Haxby/Sam/*/sourcedata/sub-*/ses-*/anat/*T1w.dicom.tgz | grep -v scout | xargs python convert_to_bids.py
+
