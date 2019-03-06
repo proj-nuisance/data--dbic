@@ -66,7 +66,7 @@ def convert_tarball(filename, options):
 
         # run the command which does conversion
         topdir = op.dirname(op.dirname(__file__))
-        cmd = 'singularity exec -e --no-home -B {} {}/../../.datalad/environments/reproin/image heudiconv --bids -f reproin -l "" -s {} -ss {}-{} --files {}'.format(topdir, topdir, subjid, date[0], date[1].replace(":", "")[:6], filename)
+        cmd = 'singularity exec -e --no-home -B {} {}/../../.datalad/environments/reproin/image heudiconv --bids -f reproin -l "" -s {} -ss {}X{} --files {}'.format(topdir, topdir, subjid, date[0], date[1].replace(":", "")[:6], filename)
         if options.dir:
             cmd += ' -o {}'.format(options.dir)
         run_command(cmd)
