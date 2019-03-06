@@ -3,5 +3,5 @@
 topdir=$(readlink -f $0 | xargs dirname | xargs dirname)
 echo "topdir: $topdir"
 
-/usr/bin/find $topdir/sourcedata/dbic-BIDS/{Chang,Gobbini,Haxby} -iname *T1w.dicom.tgz | grep -v scout | xargs python $topdir/scripts/convert_to_bids.py
+/usr/bin/find $topdir/sourcedata/dbic-BIDS/{Chang,Gobbini,Haxby} -iname *T1w.dicom.tgz | grep -v scout | xargs python $topdir/scripts/convert_to_bids.py -o bids
 

@@ -8,6 +8,7 @@ import re
 import tarfile
 import json
 import os
+import os.path as op
 from optparse import OptionParser, Option
 
 
@@ -28,7 +29,7 @@ def get_opt_parser():
 def run_command(cmd):
     
     print(cmd)
-
+    
     if os.system(cmd) != 0:
         raise RuntimeError('heudiconv did not successfully execute. check yourself')
 
@@ -64,10 +65,11 @@ def convert_tarball(filename, options):
         subjid = get_sid_from_filename(filename)
 
         # run the command which does conversion
-        if options.dir == None:
-            run_command('heudiconv --bids -f reproin -l "" -s {} -ss {}-{} --files {}'.format(subjid, date[0], date[1].replace(":", "")[:6], filename))
-        else:
-            run_command('heudiconv --bids -f reproin -l "" -s {} -ss {}-{} --files {} -o {}'.format(subjid, date[0], date[1].replace(":", "")[:6], filename, options.dir))
+        topdir = op.dirname(op.dirname(__file__))
+        cmd = 'singularity exec -e --no-home -B {} {}/../../.datalad/environments/reproin/image heudiconv --bids -f reproin -l "" -s {} -ss {}-{} --files {}'.format(topdir, topdir, subjid, date[0], date[1].replace(":", "")[:6], filename)
+        if options.dir:
+            cmd += ' -o {}'.format(options.dir)
+        run_command(cmd)
 
         break
 
