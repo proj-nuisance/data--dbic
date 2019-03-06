@@ -29,12 +29,13 @@ def get_opt_parser():
 
 def dicom_dump(filename, date):
     dataset = date[1]                                   # get actual DICOM dataset from the tuple provided
-    weight = dataset.PatientWeight                      # get the weight from that dataset
 
     with open(filename, 'r') as fp:                     # open the JSON file provided by the user
         dict = json.load(fp)                            # copy the JSON file's contents into a dict
+   
+    for f in ['PatientSize', 'PatientWeight', 'PatientAge']:
+        dict[f] = getattr(dataset, f)                   # insert into the dict
     
-    dict["PatientWeight"] = weight                      # insert PatientWeight into the dict
     print(filename);                                    # print the JSON filepath to confirm it was loaded
     save_json(filename, dict, indent=2, pretty=True)    # call heudiconv's save_json function to reload it into the JSON
 
