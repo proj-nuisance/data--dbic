@@ -4,3 +4,6 @@
 [submodule "bids"]
 	path = bids
 	url = ./bids
+[submodule "mriqc"]
+	path = mriqc
+	url = ./mriqc
