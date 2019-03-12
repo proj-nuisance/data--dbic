@@ -7,3 +7,6 @@
 [submodule "mriqc"]
 	path = mriqc
 	url = ./mriqc
+[submodule "simple_workflow"]
+	path = simple_workflow
+	url = ./simple_workflow
